@@ -17,9 +17,82 @@
     canvas {
       display: block;
     }
+    /* Test Controls */
+    #test-controls {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+      z-index: 1000;
+      min-width: 280px;
+    }
+    #test-controls.visible {
+      display: block;
+    }
+    #test-controls h3 {
+      margin: 0 0 15px 0;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+    }
+    #test-controls label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #ccc;
+    }
+    #test-controls input[type="range"] {
+      width: 100%;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    #test-controls .time-display {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-family: monospace;
+    }
+    #test-controls button {
+      width: 100%;
+      padding: 10px 15px;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    #test-controls button:hover {
+      background: #444;
+    }
+    #test-controls .seed-display {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #333;
+      font-size: 12px;
+      color: #666;
+    }
   </style>
+  <script src="config.js"></script>
 </head>
 <body>
+  <div id="test-controls">
+    <h3>Test Mode</h3>
+    <label>UTC Time</label>
+    <div class="time-display" id="time-display">00:00:00</div>
+    <input type="range" id="time-slider" min="0" max="86400" step="1" value="0">
+    <button id="new-blob-btn">Generate New Blob</button>
+    <div class="seed-display">
+      Seed: <span id="seed-display">-</span>
+    </div>
+  </div>
   <script type="importmap">
     {
       "imports": {
@@ -30,6 +103,13 @@
   </script>
   <script type="module">
     import * as THREE from 'three';
+
+    // ========================================
+    // Test Mode Configuration
+    // ========================================
+    const TEST_MODE = window.TIME_BLOB_CONFIG?.TEST_MODE || false;
+    let testTimeOverride = null;  // null = use real time, number = seconds since midnight
+    let testSeedCounter = 0;      // Increment to generate new blobs
 
     // ========================================
     // Seeded PRNG (Mulberry32)
@@ -138,6 +218,10 @@
     // Time Functions
     // ========================================
     function getTimeProgress() {
+      // In test mode, use override if set
+      if (TEST_MODE && testTimeOverride !== null) {
+        return testTimeOverride / 86400;
+      }
       const now = new Date();
       const secondsSinceMidnight =
         now.getUTCHours() * 3600 +
@@ -151,30 +235,12 @@
       return new Date().toISOString().slice(0, 10);
     }
 
-    // ========================================
-    // Initialize Daily Seed
-    // ========================================
-    const today = getTodayString();
-    const seed = hashString(today);
-    const random = mulberry32(seed);
-    const noise = new SimplexNoise(random);
-
-    // ========================================
-    // Daily Color Palette
-    // ========================================
-    const primaryHue = random() * 360;
-    const goldenRatio = 137.5;
-    const secondaryHue = (primaryHue + goldenRatio) % 360;
-    const tertiaryHue = (secondaryHue + goldenRatio) % 360;
-
-    const baseColor = new THREE.Color().setHSL(primaryHue / 360, 0.7, 0.5);
-    const accentColor = new THREE.Color().setHSL(secondaryHue / 360, 0.8, 0.6);
-
-    // Daily noise parameters
-    const noiseScale = 0.8 + random() * 0.6;
-    const rotationSpeed = 0.001 + random() * 0.002;
-    const baseAmplitude = 0.1 + random() * 0.1;
-    const maxAmplitude = 0.4 + random() * 0.3;
+    function formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
 
     // ========================================
     // Scene Setup
@@ -203,29 +269,126 @@
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
-    function createGradientTexture() {
+    // ========================================
+    // Blob State (mutable for regeneration)
+    // ========================================
+    let blobState = {
+      noise: null,
+      primaryHue: 0,
+      secondaryHue: 0,
+      tertiaryHue: 0,
+      baseColor: null,
+      accentColor: null,
+      noiseScale: 0,
+      rotationSpeed: 0,
+      baseAmplitude: 0,
+      maxAmplitude: 0,
+      seed: 0,
+      seedString: ''
+    };
+
+    let mesh = null;
+    let geometry = null;
+    let material = null;
+    let positionAttribute = null;
+    let originalPositions = null;
+    let backLight = null;
+
+    function initializeBlobState(seedString) {
+      const seed = hashString(seedString);
+      const random = mulberry32(seed);
+      const noise = new SimplexNoise(random);
+
+      const primaryHue = random() * 360;
+      const goldenRatio = 137.5;
+      const secondaryHue = (primaryHue + goldenRatio) % 360;
+      const tertiaryHue = (secondaryHue + goldenRatio) % 360;
+
+      blobState = {
+        noise,
+        primaryHue,
+        secondaryHue,
+        tertiaryHue,
+        baseColor: new THREE.Color().setHSL(primaryHue / 360, 0.7, 0.5),
+        accentColor: new THREE.Color().setHSL(secondaryHue / 360, 0.8, 0.6),
+        noiseScale: 0.8 + random() * 0.6,
+        rotationSpeed: 0.001 + random() * 0.002,
+        baseAmplitude: 0.1 + random() * 0.1,
+        maxAmplitude: 0.4 + random() * 0.3,
+        seed,
+        seedString
+      };
+
+      return blobState;
+    }
+
+    function createEnvironmentMap() {
       const canvas = document.createElement('canvas');
       canvas.width = 512;
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
 
       const gradient = ctx.createLinearGradient(0, 0, 0, 512);
-      gradient.addColorStop(0, `hsl(${primaryHue}, 30%, 15%)`);
-      gradient.addColorStop(0.5, `hsl(${secondaryHue}, 20%, 8%)`);
-      gradient.addColorStop(1, `hsl(${tertiaryHue}, 25%, 12%)`);
+      gradient.addColorStop(0, `hsl(${blobState.primaryHue}, 30%, 15%)`);
+      gradient.addColorStop(0.5, `hsl(${blobState.secondaryHue}, 20%, 8%)`);
+      gradient.addColorStop(1, `hsl(${blobState.tertiaryHue}, 25%, 12%)`);
 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 512, 512);
 
-      return new THREE.CanvasTexture(canvas);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      return texture;
     }
 
-    const envTexture = createGradientTexture();
-    envTexture.mapping = THREE.EquirectangularReflectionMapping;
-    scene.environment = pmremGenerator.fromEquirectangular(envTexture).texture;
+    function createBlob() {
+      // Remove old mesh if exists
+      if (mesh) {
+        scene.remove(mesh);
+        geometry.dispose();
+        material.dispose();
+      }
+      if (backLight) {
+        scene.remove(backLight);
+      }
+
+      // Create environment map
+      const envTexture = createEnvironmentMap();
+      scene.environment = pmremGenerator.fromEquirectangular(envTexture).texture;
+
+      // Create geometry
+      geometry = new THREE.IcosahedronGeometry(1.5, 5);
+      positionAttribute = geometry.getAttribute('position');
+      originalPositions = new Float32Array(positionAttribute.array);
+
+      // Create material
+      material = new THREE.MeshPhysicalMaterial({
+        color: blobState.baseColor,
+        metalness: 0.1,
+        roughness: 0.2,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
+        iridescence: 1.0,
+        iridescenceIOR: 1.5,
+        iridescenceThicknessRange: [100, 400],
+        transmission: 0.3,
+        thickness: 1.5,
+        envMapIntensity: 1.0,
+        side: THREE.DoubleSide
+      });
+
+      // Create mesh
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      // Update back light color
+      backLight = new THREE.DirectionalLight(blobState.accentColor, 0.5);
+      backLight.position.set(-3, -2, -5);
+      scene.add(backLight);
+    }
 
     // ========================================
-    // Lighting
+    // Lighting (static lights)
     // ========================================
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
@@ -234,42 +397,20 @@
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    const backLight = new THREE.DirectionalLight(accentColor, 0.5);
-    backLight.position.set(-3, -2, -5);
-    scene.add(backLight);
-
     // ========================================
-    // Geometry & Material
+    // Initialize
     // ========================================
-    const geometry = new THREE.IcosahedronGeometry(1.5, 5);
-    const positionAttribute = geometry.getAttribute('position');
-    const originalPositions = new Float32Array(positionAttribute.array);
-
-    const material = new THREE.MeshPhysicalMaterial({
-      color: baseColor,
-      metalness: 0.1,
-      roughness: 0.2,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
-      iridescence: 1.0,
-      iridescenceIOR: 1.5,
-      iridescenceThicknessRange: [100, 400],
-      transmission: 0.3,
-      thickness: 1.5,
-      envMapIntensity: 1.0,
-      side: THREE.DoubleSide
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    const today = getTodayString();
+    initializeBlobState(today);
+    createBlob();
 
     // ========================================
     // Geometry Update Function
     // ========================================
     function updateGeometry(t, elapsedTime) {
       const positions = positionAttribute.array;
-      const amplitude = baseAmplitude + (maxAmplitude - baseAmplitude) * t;
-      const frequency = noiseScale * (1 + t * 0.5);
+      const amplitude = blobState.baseAmplitude + (blobState.maxAmplitude - blobState.baseAmplitude) * t;
+      const frequency = blobState.noiseScale * (1 + t * 0.5);
 
       for (let i = 0; i < positions.length; i += 3) {
         const ox = originalPositions[i];
@@ -283,9 +424,9 @@
 
         // Multi-octave noise for organic look
         let noiseValue = 0;
-        noiseValue += noise.noise3D(nx * frequency, ny * frequency, nz * frequency + elapsedTime * 0.1) * 1.0;
-        noiseValue += noise.noise3D(nx * frequency * 2, ny * frequency * 2, nz * frequency * 2 + elapsedTime * 0.15) * 0.5;
-        noiseValue += noise.noise3D(nx * frequency * 4, ny * frequency * 4, nz * frequency * 4 + elapsedTime * 0.2) * 0.25;
+        noiseValue += blobState.noise.noise3D(nx * frequency, ny * frequency, nz * frequency + elapsedTime * 0.1) * 1.0;
+        noiseValue += blobState.noise.noise3D(nx * frequency * 2, ny * frequency * 2, nz * frequency * 2 + elapsedTime * 0.15) * 0.5;
+        noiseValue += blobState.noise.noise3D(nx * frequency * 4, ny * frequency * 4, nz * frequency * 4 + elapsedTime * 0.2) * 0.25;
 
         const displacement = 1 + noiseValue * amplitude;
 
@@ -299,6 +440,39 @@
     }
 
     // ========================================
+    // Test Mode UI
+    // ========================================
+    if (TEST_MODE) {
+      const controls = document.getElementById('test-controls');
+      const timeSlider = document.getElementById('time-slider');
+      const timeDisplay = document.getElementById('time-display');
+      const newBlobBtn = document.getElementById('new-blob-btn');
+      const seedDisplay = document.getElementById('seed-display');
+
+      controls.classList.add('visible');
+
+      // Initialize slider to current time
+      const now = new Date();
+      const currentSeconds = now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 + now.getUTCSeconds();
+      timeSlider.value = currentSeconds;
+      timeDisplay.textContent = formatTime(currentSeconds);
+      seedDisplay.textContent = blobState.seedString;
+
+      timeSlider.addEventListener('input', (e) => {
+        testTimeOverride = parseInt(e.target.value);
+        timeDisplay.textContent = formatTime(testTimeOverride);
+      });
+
+      newBlobBtn.addEventListener('click', () => {
+        testSeedCounter++;
+        const newSeed = `${today}-test-${testSeedCounter}`;
+        initializeBlobState(newSeed);
+        createBlob();
+        seedDisplay.textContent = newSeed;
+      });
+    }
+
+    // ========================================
     // Animation Loop
     // ========================================
     const clock = new THREE.Clock();
@@ -307,10 +481,12 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      // Check for day change
-      const nowDay = getTodayString();
-      if (nowDay !== currentDay) {
-        window.location.reload();
+      // Check for day change (only in non-test mode)
+      if (!TEST_MODE) {
+        const nowDay = getTodayString();
+        if (nowDay !== currentDay) {
+          window.location.reload();
+        }
       }
 
       const t = getTimeProgress();
@@ -318,8 +494,8 @@
 
       updateGeometry(t, elapsedTime);
 
-      mesh.rotation.y += rotationSpeed;
-      mesh.rotation.x += rotationSpeed * 0.5;
+      mesh.rotation.y += blobState.rotationSpeed;
+      mesh.rotation.x += blobState.rotationSpeed * 0.5;
 
       renderer.render(scene, camera);
     }

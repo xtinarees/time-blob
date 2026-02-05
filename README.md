@@ -13,6 +13,15 @@ A generative 3D art piece that evolves throughout the day. Built with Three.js a
 
 Open `index.html` directly in a browser to view the blob locally.
 
+### Test Mode
+
+To enable test controls (time slider + blob regeneration):
+
+1. Set `TEST_MODE: true` in `config.js`
+1. Refresh the page
+
+Test controls appear in the bottom-left corner when enabled.
+
 ## Deployment
 
 ### Prerequisites
@@ -54,6 +63,8 @@ npx cdk deploy
 ```
 time-img-3d/
 ├── index.html          # Three.js application
+├── config.js           # Local config (git-ignored)
+├── config.example.js   # Config template
 ├── deploy.sh           # Deployment script
 ├── README.md
 └── cdk/
