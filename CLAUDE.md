@@ -57,9 +57,8 @@ Test mode provides UI controls for development and debugging.
 
 ### Enabling Test Mode
 
-1. Copy `config.example.js` to `config.js`
-2. Set `TEST_MODE: true` in `config.js`
-3. Refresh the page
+1. Set `TEST_MODE: true` in `config.js`
+2. Refresh the page
 
 ### Test Controls
 
