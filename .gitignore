@@ -5,4 +5,4 @@ cdk/node_modules/
 cdk/cdk.out/
 cdk/outputs.json
 
-
+.DS_Store
