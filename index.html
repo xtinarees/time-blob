@@ -80,6 +80,56 @@
         font-size: 12px;
         color: #666;
       }
+      #test-controls .section {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #333;
+      }
+      #test-controls .section h4 {
+        margin: 0 0 10px 0;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+      }
+      #test-controls .control-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        gap: 10px;
+      }
+      #test-controls .control-row label {
+        flex: 0 0 120px;
+        margin-bottom: 0;
+        font-size: 11px;
+      }
+      #test-controls .control-row input[type="range"] {
+        flex: 1;
+        margin-bottom: 0;
+      }
+      #test-controls .control-row .value {
+        flex: 0 0 45px;
+        text-align: right;
+        font-size: 11px;
+        font-family: monospace;
+        color: #aaa;
+      }
+      #test-controls .scrollable {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 5px;
+      }
+      #test-controls .scrollable::-webkit-scrollbar {
+        width: 6px;
+      }
+      #test-controls .scrollable::-webkit-scrollbar-track {
+        background: #222;
+        border-radius: 3px;
+      }
+      #test-controls .scrollable::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 3px;
+      }
     </style>
     <script src="config.js"></script>
   </head>
@@ -98,6 +148,204 @@
       />
       <button id="new-blob-btn">Generate New Blob</button>
       <div class="seed-display">Seed: <span id="seed-display">-</span></div>
+
+      <div class="section">
+        <h4>Material Properties</h4>
+        <div class="scrollable">
+          <div class="control-row">
+            <label>Metalness</label>
+            <input
+              type="range"
+              id="mat-metalness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.1"
+            />
+            <span class="value" id="val-metalness">0.10</span>
+          </div>
+          <div class="control-row">
+            <label>Roughness</label>
+            <input
+              type="range"
+              id="mat-roughness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.2"
+            />
+            <span class="value" id="val-roughness">0.20</span>
+          </div>
+          <div class="control-row">
+            <label>Clearcoat</label>
+            <input
+              type="range"
+              id="mat-clearcoat"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-clearcoat">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Clearcoat Rough</label>
+            <input
+              type="range"
+              id="mat-clearcoatRoughness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.1"
+            />
+            <span class="value" id="val-clearcoatRoughness">0.10</span>
+          </div>
+          <div class="control-row">
+            <label>Iridescence</label>
+            <input
+              type="range"
+              id="mat-iridescence"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-iridescence">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Iridescence IOR</label>
+            <input
+              type="range"
+              id="mat-iridescenceIOR"
+              min="1"
+              max="2.333"
+              step="0.01"
+              value="1.5"
+            />
+            <span class="value" id="val-iridescenceIOR">1.50</span>
+          </div>
+          <div class="control-row">
+            <label>Irid. Thick Min</label>
+            <input
+              type="range"
+              id="mat-iridescenceThicknessMin"
+              min="0"
+              max="1000"
+              step="10"
+              value="100"
+            />
+            <span class="value" id="val-iridescenceThicknessMin">100</span>
+          </div>
+          <div class="control-row">
+            <label>Irid. Thick Max</label>
+            <input
+              type="range"
+              id="mat-iridescenceThicknessMax"
+              min="0"
+              max="1000"
+              step="10"
+              value="400"
+            />
+            <span class="value" id="val-iridescenceThicknessMax">400</span>
+          </div>
+          <div class="control-row">
+            <label>Transmission</label>
+            <input
+              type="range"
+              id="mat-transmission"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.3"
+            />
+            <span class="value" id="val-transmission">0.30</span>
+          </div>
+          <div class="control-row">
+            <label>Thickness</label>
+            <input
+              type="range"
+              id="mat-thickness"
+              min="0"
+              max="5"
+              step="0.1"
+              value="1.5"
+            />
+            <span class="value" id="val-thickness">1.50</span>
+          </div>
+          <div class="control-row">
+            <label>Env Map Intensity</label>
+            <input
+              type="range"
+              id="mat-envMapIntensity"
+              min="0"
+              max="3"
+              step="0.1"
+              value="1.0"
+            />
+            <span class="value" id="val-envMapIntensity">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Sheen</label>
+            <input
+              type="range"
+              id="mat-sheen"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0"
+            />
+            <span class="value" id="val-sheen">0.00</span>
+          </div>
+          <div class="control-row">
+            <label>Sheen Roughness</label>
+            <input
+              type="range"
+              id="mat-sheenRoughness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-sheenRoughness">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Specular Intensity</label>
+            <input
+              type="range"
+              id="mat-specularIntensity"
+              min="0"
+              max="2"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-specularIntensity">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>IOR</label>
+            <input
+              type="range"
+              id="mat-ior"
+              min="1"
+              max="2.333"
+              step="0.01"
+              value="1.5"
+            />
+            <span class="value" id="val-ior">1.50</span>
+          </div>
+          <div class="control-row">
+            <label>Reflectivity</label>
+            <input
+              type="range"
+              id="mat-reflectivity"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+            />
+            <span class="value" id="val-reflectivity">0.50</span>
+          </div>
+        </div>
+      </div>
     </div>
     <script type="importmap">
       {
@@ -442,7 +690,7 @@
         scene.background = blobState.backgroundColor;
 
         // Create geometry
-        geometry = new THREE.IcosahedronGeometry(1.4, 5);
+        geometry = new THREE.IcosahedronGeometry(1, 8);
         positionAttribute = geometry.getAttribute("position");
         originalPositions = new Float32Array(positionAttribute.array);
 
@@ -471,16 +719,16 @@
         scene.add(mesh);
 
         // Update back light color
-        backLight = new THREE.DirectionalLight(blobState.accentColor, 0.5);
-        backLight.position.set(-3, -2, -5);
-        scene.add(backLight);
+        // backLight = new THREE.DirectionalLight(blobState.accentColor, 0.5);
+        // backLight.position.set(-3, -2, -5);
+        // scene.add(backLight);
       }
 
       // ========================================
       // Lighting (static lights)
       // ========================================
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-      scene.add(ambientLight);
+      // const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+      // scene.add(ambientLight);
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
       directionalLight.position.set(5, 5, 5);
@@ -604,7 +852,100 @@
           initializeBlobState(newSeed);
           createBlob();
           seedDisplay.textContent = newSeed;
+          // Reset material sliders to default values
+          resetMaterialSliders();
         });
+
+        // Material property controls
+        const materialProps = [
+          { id: "metalness", prop: "metalness", decimals: 2 },
+          { id: "roughness", prop: "roughness", decimals: 2 },
+          { id: "clearcoat", prop: "clearcoat", decimals: 2 },
+          { id: "clearcoatRoughness", prop: "clearcoatRoughness", decimals: 2 },
+          { id: "iridescence", prop: "iridescence", decimals: 2 },
+          { id: "iridescenceIOR", prop: "iridescenceIOR", decimals: 2 },
+          { id: "transmission", prop: "transmission", decimals: 2 },
+          { id: "thickness", prop: "thickness", decimals: 2 },
+          { id: "envMapIntensity", prop: "envMapIntensity", decimals: 2 },
+          { id: "sheen", prop: "sheen", decimals: 2 },
+          { id: "sheenRoughness", prop: "sheenRoughness", decimals: 2 },
+          { id: "specularIntensity", prop: "specularIntensity", decimals: 2 },
+          { id: "ior", prop: "ior", decimals: 2 },
+          { id: "reflectivity", prop: "reflectivity", decimals: 2 },
+        ];
+
+        materialProps.forEach(({ id, prop, decimals }) => {
+          const slider = document.getElementById(`mat-${id}`);
+          const valueDisplay = document.getElementById(`val-${id}`);
+
+          slider.addEventListener("input", (e) => {
+            const value = parseFloat(e.target.value);
+            material[prop] = value;
+            valueDisplay.textContent = value.toFixed(decimals);
+          });
+        });
+
+        // Special handling for iridescence thickness range (two sliders -> one array)
+        const iridThickMinSlider = document.getElementById(
+          "mat-iridescenceThicknessMin",
+        );
+        const iridThickMaxSlider = document.getElementById(
+          "mat-iridescenceThicknessMax",
+        );
+        const iridThickMinVal = document.getElementById(
+          "val-iridescenceThicknessMin",
+        );
+        const iridThickMaxVal = document.getElementById(
+          "val-iridescenceThicknessMax",
+        );
+
+        iridThickMinSlider.addEventListener("input", (e) => {
+          const min = parseFloat(e.target.value);
+          const max = parseFloat(iridThickMaxSlider.value);
+          material.iridescenceThicknessRange = [min, max];
+          iridThickMinVal.textContent = Math.round(min);
+        });
+
+        iridThickMaxSlider.addEventListener("input", (e) => {
+          const min = parseFloat(iridThickMinSlider.value);
+          const max = parseFloat(e.target.value);
+          material.iridescenceThicknessRange = [min, max];
+          iridThickMaxVal.textContent = Math.round(max);
+        });
+
+        function resetMaterialSliders() {
+          // Reset all sliders to match the newly created material
+          const defaults = {
+            metalness: 0.1,
+            roughness: 0.2,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.1,
+            iridescence: 1.0,
+            iridescenceIOR: 1.5,
+            transmission: 0.3,
+            thickness: 1.5,
+            envMapIntensity: 1.0,
+            sheen: 0,
+            sheenRoughness: 1.0,
+            specularIntensity: 1.0,
+            ior: 1.5,
+            reflectivity: 0.5,
+          };
+
+          materialProps.forEach(({ id, prop, decimals }) => {
+            const slider = document.getElementById(`mat-${id}`);
+            const valueDisplay = document.getElementById(`val-${id}`);
+            const value = defaults[prop];
+            slider.value = value;
+            valueDisplay.textContent = value.toFixed(decimals);
+          });
+
+          // Reset iridescence thickness
+          iridThickMinSlider.value = 100;
+          iridThickMaxSlider.value = 400;
+          iridThickMinVal.textContent = "100";
+          iridThickMaxVal.textContent = "400";
+        }
       }
 
       // ========================================
@@ -629,8 +970,8 @@
 
         updateGeometry(t, elapsedTime);
 
-        mesh.rotation.y += blobState.rotationSpeed;
-        mesh.rotation.x += blobState.rotationSpeed * 0.5;
+        // mesh.rotation.y += blobState.rotationSpeed;
+        // mesh.rotation.x += blobState.rotationSpeed * 0.5;
 
         renderer.render(scene, camera);
       }

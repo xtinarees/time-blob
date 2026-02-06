@@ -4,3 +4,7 @@ Add a test mode that will allow me to view different states of the blob. Base th
 
 1. A slider for viewing the blob at any UTC time, from 0 to 24.
 2. A "Generate new blob" button for similating a "new" day.
+
+## Edit 2
+
+In the existing test mode UI, add options to change all the "MeshPhysicalMaterial" options
