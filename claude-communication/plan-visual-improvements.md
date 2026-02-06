@@ -177,3 +177,6 @@ gradient.addColorStop(1, `hsl(${blobState.tertiaryHue}, 20%, 88%)`);
 
 4.  Use time slider to verify smooth appearance at both t=0 and t=1
 5.  Generate 5+ new blobs to verify color variety and harmony
+
+--
+Notes: This was a total fail and did not work at all.
