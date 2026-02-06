@@ -410,9 +410,9 @@
         const ctx = canvas.getContext("2d");
 
         const gradient = ctx.createLinearGradient(0, 0, 0, 512);
-        gradient.addColorStop(0, `hsl(${blobState.primaryHue}, 20%, 88%)`);
-        gradient.addColorStop(0.5, `hsl(${blobState.secondaryHue}, 15%, 85%)`);
-        gradient.addColorStop(1, `hsl(${blobState.tertiaryHue}, 20%, 88%)`);
+        gradient.addColorStop(0, `hsl(${blobState.primaryHue}, 30%, 15%)`);
+        gradient.addColorStop(0.5, `hsl(${blobState.secondaryHue}, 20%, 8%)`);
+        gradient.addColorStop(1, `hsl(${blobState.tertiaryHue}, 25%, 12%)`);
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 512, 512);
@@ -442,7 +442,7 @@
         scene.background = blobState.backgroundColor;
 
         // Create geometry
-        geometry = new THREE.IcosahedronGeometry(1.5, 5);
+        geometry = new THREE.IcosahedronGeometry(1.4, 5);
         positionAttribute = geometry.getAttribute("position");
         originalPositions = new Float32Array(positionAttribute.array);
 
