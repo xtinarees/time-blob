@@ -63,7 +63,7 @@ export function initializeBlobState(seedString) {
     baseColor: new THREE.Color().setHSL(primaryHue / 360, 1, 0.5),
     accentColor: new THREE.Color().setHSL(secondaryHue / 360, 1, 0.5),
     backgroundColor: new THREE.Color().setHSL(backgroundHue / 360, 1, 0.5),
-    noiseScale: 1,
+    noiseScale: 0.8 + random() * 0.6,
     rotationSpeed: 0,
     baseAmplitude: 0,
     maxAmplitude: 1,
