@@ -20,3 +20,7 @@ Reference the @cdk/ directory.
 ## Edit 4
 
 Clean up scripts by moving @cdk/package.json to @package.json so there is only 1 package file. Also clearly document and distinguish between deploying the cdk infastructure and deploying to the s3 bucket. Update @readme.md and @claude.md to reflect these changes.
+
+## Edit 5
+
+Please split the cdk infastructure deployment and the s3 deployment into 2 separate scripts

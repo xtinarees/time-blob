@@ -6,8 +6,9 @@ Generative 3D art piece using Three.js that evolves throughout the day based on 
 
 - **Local dev**: `npm run watch` (auto-rebuilds on file changes, test mode enabled)
 - **Production build**: `npm run build`
-- **Test build**: `npm run build_test`
-- **Deploy**: `./deploy.sh` (first time: `./deploy.sh --bootstrap`)
+- **Test build**: `npm run build:test`
+- **Deploy infra only**: `./deploy-infra.sh`
+- **Deploy content only**: `./deploy-content.sh`
 - **Live URL**: https://blob.christinarees.com
 - **Open in browser**: `dist/index.html`
 
@@ -26,12 +27,16 @@ src/
   test-controls.css    # Test controls panel styles
 template.html          # HTML shell with placeholders for CSS/JS injection
 build.js               # Node build script (production/test/watch modes)
-package.json           # devDependencies + build scripts
+package.json           # All dependencies (frontend + CDK) and build/deploy scripts
 .babelrc               # Babel config (preset-env targeting modern browsers)
 dist/                  # Build output (git-ignored)
   index.html           # Final assembled HTML
-deploy.sh              # Deployment script
+deploy-infra.sh        # Infrastructure only (CDK)
+deploy-content.sh      # Content only (S3 sync + CloudFront invalidation)
 cdk/                   # AWS CDK infrastructure (TypeScript)
+  cdk.json             # CDK app config
+  tsconfig.json        # TypeScript config for CDK code
+  bin/time-blob.ts     # CDK app entry point
   lib/time-blob-stack.ts  # S3 + CloudFront + ACM + Route53
 ```
 
@@ -42,7 +47,7 @@ The build system uses esbuild + Babel to bundle `src/main.js` into a single `dis
 ### Build Modes
 
 - **`npm run build`** - Production: minified, no test controls code
-- **`npm run build_test`** - Test: unminified, inline sourcemaps, test controls included
+- **`npm run build:test`** - Test: unminified, inline sourcemaps, test controls included
 - **`npm run watch`** - Test mode + auto-rebuild on file changes
 
 ### Conditional Compilation
@@ -50,6 +55,25 @@ The build system uses esbuild + Babel to bundle `src/main.js` into a single `dis
 `TEST_MODE` is a bare identifier replaced at build time by esbuild's `define`. In production, `if (TEST_MODE) {...}` becomes `if (false) {...}` and is dead-code eliminated, so test-controls.js is never imported.
 
 Test controls HTML and CSS are also stripped from the production build.
+
+## Deployment
+
+All dependencies (frontend and CDK) are managed in the root `package.json`.
+
+### Infrastructure (`./deploy-infra.sh`)
+
+Creates/updates AWS resources via CDK (S3 bucket, CloudFront, ACM certificate, Route53 record). Only needed when infrastructure changes or on first deploy.
+
+- **`npm run cdk:diff`** - Preview pending infrastructure changes
+- **`npm run cdk:destroy`** - Tear down all AWS resources
+
+### Content (`./deploy-content.sh`)
+
+Builds the frontend, syncs `dist/` to S3 via `aws s3 sync`, and invalidates the CloudFront cache. Use this for day-to-day code changes after infrastructure is already deployed.
+
+### Environment Variables
+
+See `.env.example`. Key variable: `CDK_DEFAULT_ACCOUNT` (your 12-digit AWS account ID). AWS credentials via `AWS_PROFILE` or access key environment variables.
 
 ## Technical Details
 
@@ -72,16 +96,6 @@ Test controls HTML and CSS are also stripped from the production build.
 - CloudFront with HTTPS redirect
 - ACM certificate with DNS validation via Route53
 - Hosted zone lookup for christinarees.com
-
-## CDK Commands
-
-```bash
-cd cdk
-npm install
-npx cdk deploy          # Deploy stack
-npx cdk diff            # Preview changes
-npx cdk destroy         # Tear down
-```
 
 ## Modifying the Blob
 

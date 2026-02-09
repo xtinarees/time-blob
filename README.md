@@ -22,7 +22,7 @@ Open `dist/index.html` in a browser to view the blob.
 
 ```bash
 npm run build        # Production build (minified, no test code)
-npm run build_test   # Test build (unminified, with test controls)
+npm run build:test   # Test build (unminified, with test controls)
 npm run watch        # Test build + auto-rebuild on file changes
 ```
 
@@ -52,35 +52,41 @@ The CDK stack requires AWS credentials and an account ID. Copy `.env.example` to
 cp .env.example .env
 ```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `CDK_DEFAULT_ACCOUNT` | Yes | Your 12-digit AWS account ID |
-| `AWS_PROFILE` | One of these | Named AWS CLI profile to use for credentials |
-| `AWS_ACCESS_KEY_ID` | One of these | AWS access key (alternative to `AWS_PROFILE`) |
+| Variable                | Required     | Description                                    |
+| ----------------------- | ------------ | ---------------------------------------------- |
+| `CDK_DEFAULT_ACCOUNT`   | Yes          | Your 12-digit AWS account ID                   |
+| `AWS_PROFILE`           | One of these | Named AWS CLI profile to use for credentials   |
+| `AWS_ACCESS_KEY_ID`     | One of these | AWS access key (alternative to `AWS_PROFILE`)  |
 | `AWS_SECRET_ACCESS_KEY` | One of these | AWS secret key (used with `AWS_ACCESS_KEY_ID`) |
-| `AWS_SESSION_TOKEN` | No | Session token for temporary credentials |
+| `AWS_SESSION_TOKEN`     | No           | Session token for temporary credentials        |
 
 The region is hardcoded to `us-east-1` (required for CloudFront ACM certificates).
 
 ### First-Time Setup
 
 ```bash
-# Bootstrap CDK and deploy
-./deploy.sh --bootstrap
+# Bootstrap CDK, deploy infrastructure, build
+./deploy-infra.sh --bootstrap
+# Upload content
+npm run deploy:content
 ```
 
-### Subsequent Deployments
+### Infrastructure Only
+
+Creates/updates AWS resources (S3 bucket, CloudFront, ACM certificate, Route53 record). Only needed when infrastructure changes.
 
 ```bash
-./deploy.sh
+npm run deploy:infra            # Deploy infrastructure
+npm run cdk:diff                # Preview infrastructure changes
+npm run cdk:destroy             # Tear down all AWS resources
 ```
 
-### Manual CDK Commands
+### Content Only
+
+Builds the frontend, syncs `dist/` to S3, and invalidates the CloudFront cache. Use this for day-to-day code changes after infrastructure is already deployed.
 
 ```bash
-cd cdk
-npm install
-npx cdk deploy
+npm run deploy:content
 ```
 
 ## Infrastructure
@@ -106,13 +112,13 @@ time-img-3d/
 │   └── test-controls.css    # Test panel styles (excluded from production)
 ├── template.html            # HTML shell with CSS/JS placeholders
 ├── build.js                 # esbuild + Babel build script
-├── package.json             # Dependencies and build scripts
+├── package.json             # All dependencies (frontend + CDK)
 ├── .babelrc                 # Babel config
 ├── dist/                    # Build output (git-ignored)
 │   └── index.html           # Assembled single-file app
-├── deploy.sh                # Deployment script
+├── deploy-infra.sh          # Infrastructure only (CDK)
+├── deploy-content.sh        # Content only (S3 sync + CloudFront invalidation)
 └── cdk/
-    ├── package.json
     ├── tsconfig.json
     ├── cdk.json
     ├── bin/
