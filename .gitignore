@@ -1,8 +1,13 @@
+.DS_Store
+
 # Dependencies
-cdk/node_modules/
+node_modules/
+
+# Build output
+dist/
 
 # CDK outputs
 cdk/cdk.out/
 cdk/outputs.json
 
-.DS_Store
+
