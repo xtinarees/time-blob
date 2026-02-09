@@ -1,3 +1,7 @@
+FIRST PROMPT, GIVEN TO GEMINI:
+
+I am building a prompt for Claude Code to build a single page website/net art. Please help me refine this plan/prompt for the best results and to reduce unneeded token usage:
+
 I want to create a single page website that displays a 3D abstract shape based on the current time.
 Requirements for the shape:
 
@@ -18,10 +22,7 @@ Site requirements:
 
 Please help me plan out the best approach to accomplish this and ask any questions that I did not cover in this initial high-level summary.
 
---
-
-When fed into gemini
-prompt: I am building a prompt for Claude Code to build a single page website/net art. Please help me refine this plan/prompt for the best results and to reduce unneeded token usage:
+GEMINI RESPONSE
 
 answer:
 This is a fantastic concept for a piece of net art. Because you are using Claude Code, which is highly agentic and capable of iterative refinement, your prompt should focus on mathematical constraints and architectural clarity rather than just aesthetic descriptions.
@@ -136,13 +137,3 @@ Pcurrent​=Pstart​+(Pend​−Pstart​)⋅f(t)
 Where f(t) is an easing function that smooths the growth over the 24-hour period.
 
 Would you like me to write a specific JavaScript function for the "Daily Seed" logic that you can drop into the code if Claude struggles with the PRNG?
-
---
-
-some inspo:
-https://codepen.io/alexandrebucci/pen/rNadyav
-https://blobmixer.14islands.com/
-https://codepen.io/kjrf/pen/JoPyWPw
-https://codesandbox.io/p/sandbox/small-brook-yro193?file=%2Fsrc%2FApp.js
-https://github.com/pmndrs/react-three-fiber
-https://codepen.io/kjrf/pen/JoPyWPw
