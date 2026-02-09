@@ -12,5 +12,6 @@ dist/
 # CDK outputs
 cdk/cdk.out/
 cdk/outputs.json
+cdk/cdk.context.json
 
 
