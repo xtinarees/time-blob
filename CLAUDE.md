@@ -76,7 +76,7 @@ Builds the frontend, syncs `dist/` to S3 via `aws s3 sync`, and invalidates the 
 
 ### Environment Variables
 
-See `.env.example`. Key variable: `CDK_DEFAULT_ACCOUNT` (your 12-digit AWS account ID). AWS credentials via `AWS_PROFILE` or access key environment variables.
+See `.env.example`. Key variable: `CDK_DEFAULT_ACCOUNT` (your 12-digit AWS account ID). AWS credentials via `AWS_PROFILE`
 
 ## Technical Details
 

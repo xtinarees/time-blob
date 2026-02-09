@@ -55,15 +55,10 @@ The CDK stack requires AWS credentials and an account ID. Copy `.env.example` to
 cp .env.example .env
 ```
 
-| Variable                | Required     | Description                                    |
-| ----------------------- | ------------ | ---------------------------------------------- |
-| `CDK_DEFAULT_ACCOUNT`   | Yes          | Your 12-digit AWS account ID                   |
-| `AWS_PROFILE`           | One of these | Named AWS CLI profile to use for credentials   |
-| `AWS_ACCESS_KEY_ID`     | One of these | AWS access key (alternative to `AWS_PROFILE`)  |
-| `AWS_SECRET_ACCESS_KEY` | One of these | AWS secret key (used with `AWS_ACCESS_KEY_ID`) |
-| `AWS_SESSION_TOKEN`     | No           | Session token for temporary credentials        |
-
-The region is hardcoded to `us-east-1` (required for CloudFront ACM certificates).
+| Variable              | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `CDK_DEFAULT_ACCOUNT` | Your 12-digit AWS account ID                 |
+| `AWS_PROFILE`         | Named AWS CLI profile to use for credentials |
 
 ### First-Time Setup
 
