@@ -1,6 +1,6 @@
 # Time Blob Project
 
-Generative 3D art piece using Three.js that evolves throughout the day based on UTC time.
+Generative 3D blob using Three.js that evolves throughout the day based on UTC time.
 
 ## Quick Reference
 

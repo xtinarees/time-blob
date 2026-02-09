@@ -1,17 +1,18 @@
 # Time Blob
 
-A generative 3D art piece that evolves throughout the day. Built with Three.js and hosted on AWS.
+A generative 3D blob that evolves throughout the day. Built with Three.js and hosted on AWS.
 
 ## How It Works
 
 - Each day generates a unique blob using a seeded random number generator based on the UTC date
 - The blob's complexity evolves from simple (midnight) to complex (end of day)
-- Colors, noise patterns, and rotation speed are uniquely generated daily
+- Colors and noise patterns are uniquely generated daily
 - At midnight UTC, the shape resets with new parameters
 
-## Local Development
+## Run Locally
 
 ```bash
+nvm use
 npm install
 npm run watch        # Build with test controls + auto-rebuild on changes
 ```
@@ -54,11 +55,6 @@ The CDK stack requires AWS credentials and an account ID. Copy `.env.example` to
 ```bash
 cp .env.example .env
 ```
-
-| Variable              | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `CDK_DEFAULT_ACCOUNT` | Your 12-digit AWS account ID                 |
-| `AWS_PROFILE`         | Named AWS CLI profile to use for credentials |
 
 ### First-Time Setup
 
