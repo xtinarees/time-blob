@@ -14,7 +14,13 @@ if [ "$1" == "--bootstrap" ]; then
     npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-east-1
 fi
 
-# Install dependencies if needed
+# Build the frontend
+echo "Building frontend..."
+cd "$SCRIPT_DIR"
+npm install
+npm run build
+
+# Install CDK dependencies if needed
 if [ ! -d "$CDK_DIR/node_modules" ]; then
     echo "Installing CDK dependencies..."
     cd "$CDK_DIR"

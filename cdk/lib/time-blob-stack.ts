@@ -56,13 +56,12 @@ export class TimeBlobStack extends cdk.Stack {
       ),
     });
 
-    // Deploy index.html to S3
+    // Deploy built output to S3
     new s3deploy.BucketDeployment(this, "DeployWebsite", {
-      sources: [s3deploy.Source.asset(path.join(__dirname, "../../"))],
+      sources: [s3deploy.Source.asset(path.join(__dirname, "../../dist"))],
       destinationBucket: bucket,
       distribution,
       distributionPaths: ["/*"],
-      exclude: ["cdk/*", "cdk", "*.md", "deploy.sh", ".git/*", ".git"],
     });
 
     // Outputs

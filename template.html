@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Blob</title>
+    <style>/* __CSS__ */</style>
+  </head>
+  <body>
+    <!-- TEST_CONTROLS_START -->
+    <div id="test-controls">
+      <h3>Test Mode</h3>
+      <label>UTC Time</label>
+      <div class="time-display" id="time-display">00:00:00</div>
+      <input
+        type="range"
+        id="time-slider"
+        min="0"
+        max="86400"
+        step="1"
+        value="0"
+      />
+      <button id="new-blob-btn">Generate New Blob</button>
+      <div class="seed-display">Seed: <span id="seed-display">-</span></div>
+
+      <div class="section">
+        <h4>Material Properties</h4>
+        <div class="scrollable">
+          <div class="control-row">
+            <label>Metalness</label>
+            <input
+              type="range"
+              id="mat-metalness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.1"
+            />
+            <span class="value" id="val-metalness">0.10</span>
+          </div>
+          <div class="control-row">
+            <label>Roughness</label>
+            <input
+              type="range"
+              id="mat-roughness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.2"
+            />
+            <span class="value" id="val-roughness">0.20</span>
+          </div>
+          <div class="control-row">
+            <label>Clearcoat</label>
+            <input
+              type="range"
+              id="mat-clearcoat"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-clearcoat">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Clearcoat Rough</label>
+            <input
+              type="range"
+              id="mat-clearcoatRoughness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.1"
+            />
+            <span class="value" id="val-clearcoatRoughness">0.10</span>
+          </div>
+          <div class="control-row">
+            <label>Iridescence</label>
+            <input
+              type="range"
+              id="mat-iridescence"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-iridescence">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Iridescence IOR</label>
+            <input
+              type="range"
+              id="mat-iridescenceIOR"
+              min="1"
+              max="2.333"
+              step="0.01"
+              value="1.5"
+            />
+            <span class="value" id="val-iridescenceIOR">1.50</span>
+          </div>
+          <div class="control-row">
+            <label>Irid. Thick Min</label>
+            <input
+              type="range"
+              id="mat-iridescenceThicknessMin"
+              min="0"
+              max="1000"
+              step="10"
+              value="100"
+            />
+            <span class="value" id="val-iridescenceThicknessMin">100</span>
+          </div>
+          <div class="control-row">
+            <label>Irid. Thick Max</label>
+            <input
+              type="range"
+              id="mat-iridescenceThicknessMax"
+              min="0"
+              max="1000"
+              step="10"
+              value="400"
+            />
+            <span class="value" id="val-iridescenceThicknessMax">400</span>
+          </div>
+          <div class="control-row">
+            <label>Transmission</label>
+            <input
+              type="range"
+              id="mat-transmission"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.3"
+            />
+            <span class="value" id="val-transmission">0.30</span>
+          </div>
+          <div class="control-row">
+            <label>Thickness</label>
+            <input
+              type="range"
+              id="mat-thickness"
+              min="0"
+              max="5"
+              step="0.1"
+              value="1.5"
+            />
+            <span class="value" id="val-thickness">1.50</span>
+          </div>
+          <div class="control-row">
+            <label>Env Map Intensity</label>
+            <input
+              type="range"
+              id="mat-envMapIntensity"
+              min="0"
+              max="3"
+              step="0.1"
+              value="1.0"
+            />
+            <span class="value" id="val-envMapIntensity">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Sheen</label>
+            <input
+              type="range"
+              id="mat-sheen"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0"
+            />
+            <span class="value" id="val-sheen">0.00</span>
+          </div>
+          <div class="control-row">
+            <label>Sheen Roughness</label>
+            <input
+              type="range"
+              id="mat-sheenRoughness"
+              min="0"
+              max="1"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-sheenRoughness">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Specular Intensity</label>
+            <input
+              type="range"
+              id="mat-specularIntensity"
+              min="0"
+              max="2"
+              step="0.01"
+              value="1.0"
+            />
+            <span class="value" id="val-specularIntensity">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>IOR</label>
+            <input
+              type="range"
+              id="mat-ior"
+              min="1"
+              max="2.333"
+              step="0.01"
+              value="1.5"
+            />
+            <span class="value" id="val-ior">1.50</span>
+          </div>
+          <div class="control-row">
+            <label>Reflectivity</label>
+            <input
+              type="range"
+              id="mat-reflectivity"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+            />
+            <span class="value" id="val-reflectivity">0.50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- TEST_CONTROLS_END -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">/* __JS__ */</script>
+  </body>
+</html>
