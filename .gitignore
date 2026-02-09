@@ -6,6 +6,9 @@ node_modules/
 # Build output
 dist/
 
+# Environment variables
+.env
+
 # CDK outputs
 cdk/cdk.out/
 cdk/outputs.json

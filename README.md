@@ -44,6 +44,24 @@ Test code is completely excluded from production builds via dead code eliminatio
 - Node.js 18+
 - An existing Route53 hosted zone for `christinarees.com`
 
+### Environment Variables
+
+The CDK stack requires AWS credentials and an account ID. Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `CDK_DEFAULT_ACCOUNT` | Yes | Your 12-digit AWS account ID |
+| `AWS_PROFILE` | One of these | Named AWS CLI profile to use for credentials |
+| `AWS_ACCESS_KEY_ID` | One of these | AWS access key (alternative to `AWS_PROFILE`) |
+| `AWS_SECRET_ACCESS_KEY` | One of these | AWS secret key (used with `AWS_ACCESS_KEY_ID`) |
+| `AWS_SESSION_TOKEN` | No | Session token for temporary credentials |
+
+The region is hardcoded to `us-east-1` (required for CloudFront ACM certificates).
+
 ### First-Time Setup
 
 ```bash
