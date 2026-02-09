@@ -610,6 +610,25 @@
         seedString: "",
       };
 
+      const materialDefaults = {
+        vertexColors: true,
+        metalness: 0.21,
+        roughness: 0.2,
+        clearcoat: 0.9,
+        clearcoatRoughness: 0.14,
+        iridescence: 1.0,
+        iridescenceIOR: 1.5,
+        iridescenceThicknessRange: [0, 230],
+        transmission: 0,
+        thickness: 0.3,
+        envMapIntensity: 1.2,
+        sheen: 0.16,
+        sheenRoughness: 0.62,
+        specularIntensity: 0.97,
+        ior: 1.63,
+        reflectivity: 0,
+      };
+
       let mesh = null;
       let geometry = null;
       let material = null;
@@ -633,17 +652,17 @@
           primaryHue,
           secondaryHue,
           tertiaryHue,
-          baseColor: new THREE.Color().setHSL(primaryHue / 360, 0.5, 0.75),
-          accentColor: new THREE.Color().setHSL(secondaryHue / 360, 0.55, 0.7),
+          baseColor: new THREE.Color().setHSL(primaryHue / 360, 1, 0.5),
+          accentColor: new THREE.Color().setHSL(secondaryHue / 360, 1, 0.5),
           backgroundColor: new THREE.Color().setHSL(
             backgroundHue / 360,
-            0.2,
-            0.92,
+            1,
+            0.5,
           ),
-          noiseScale: 0.8 + random() * 0.6,
-          rotationSpeed: 0.001 + random() * 0.002,
-          baseAmplitude: 0.1 + random() * 0.1,
-          maxAmplitude: 0.4 + random() * 0.3,
+          noiseScale: 1,
+          rotationSpeed: 0,
+          baseAmplitude: 0,
+          maxAmplitude: 1,
           seed,
           seedString,
         };
@@ -700,18 +719,7 @@
 
         // Create material
         material = new THREE.MeshPhysicalMaterial({
-          vertexColors: true,
-          metalness: 0.1,
-          roughness: 0.2,
-          clearcoat: 1.0,
-          clearcoatRoughness: 0.1,
-          iridescence: 1.0,
-          iridescenceIOR: 1.5,
-          iridescenceThicknessRange: [100, 400],
-          transmission: 0.3,
-          thickness: 1.5,
-          envMapIntensity: 1.0,
-          side: THREE.DoubleSide,
+          ...materialDefaults,
         });
 
         // Create mesh
@@ -916,20 +924,7 @@
         function resetMaterialSliders() {
           // Reset all sliders to match the newly created material
           const defaults = {
-            metalness: 0.1,
-            roughness: 0.2,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1,
-            iridescence: 1.0,
-            iridescenceIOR: 1.5,
-            transmission: 0.3,
-            thickness: 1.5,
-            envMapIntensity: 1.0,
-            sheen: 0,
-            sheenRoughness: 1.0,
-            specularIntensity: 1.0,
-            ior: 1.5,
-            reflectivity: 0.5,
+            ...materialDefaults,
           };
 
           materialProps.forEach(({ id, prop, decimals }) => {
