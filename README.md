@@ -16,7 +16,10 @@ npm install
 npm run watch        # Build with test controls + auto-rebuild on changes
 ```
 
-Open `dist/index.html` in a browser to view the blob.
+## View Locally
+
+`python3 -m http.server 8000`
+View on http://localhost:8000/dist/
 
 ### Build Commands
 
@@ -110,12 +113,14 @@ time-img-3d/
 │   ├── test-controls.js     # Test mode UI (excluded from production)
 │   ├── styles.css           # Base styles
 │   └── test-controls.css    # Test panel styles (excluded from production)
-├── template.html            # HTML shell with CSS/JS placeholders
+├── template.html            # HTML shell (references external CSS/JS)
 ├── build.js                 # esbuild + Babel build script
 ├── package.json             # All dependencies (frontend + CDK)
 ├── .babelrc                 # Babel config
 ├── dist/                    # Build output (git-ignored)
-│   └── index.html           # Assembled single-file app
+│   ├── index.html           # HTML page
+│   ├── script[.hash].js     # Bundled JavaScript (content-hashed in production)
+│   └── styles[.hash].css    # Compiled CSS (content-hashed in production)
 ├── deploy-infra.sh          # Infrastructure only (CDK)
 ├── deploy-content.sh        # Content only (S3 sync + CloudFront invalidation)
 └── cdk/

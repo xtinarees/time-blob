@@ -1,5 +1,6 @@
 import esbuild from "esbuild";
 import babel from "esbuild-plugin-babel";
+import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -14,7 +15,19 @@ const distDir = path.join(__dirname, "dist");
 const srcDir = path.join(__dirname, "src");
 const templatePath = path.join(__dirname, "template.html");
 
-function assembleHTML(jsCode) {
+function contentHash(content) {
+  return crypto.createHash("sha256").update(content).digest("hex").slice(0, 8);
+}
+
+function cleanDist() {
+  if (fs.existsSync(distDir)) {
+    for (const file of fs.readdirSync(distDir)) {
+      fs.unlinkSync(path.join(distDir, file));
+    }
+  }
+}
+
+function buildCSS() {
   let css = fs.readFileSync(path.join(srcDir, "styles.css"), "utf-8");
   if (isTest) {
     css +=
@@ -22,10 +35,15 @@ function assembleHTML(jsCode) {
       fs.readFileSync(path.join(srcDir, "test-controls.css"), "utf-8");
   }
 
-  let html = fs.readFileSync(templatePath, "utf-8");
+  const filename = isTest
+    ? "styles.css"
+    : `styles.${contentHash(css)}.css`;
+  fs.writeFileSync(path.join(distDir, filename), css);
+  return filename;
+}
 
-  html = html.replace("/* __CSS__ */", css);
-  html = html.replace("/* __JS__ */", jsCode);
+function buildHTML(jsFilename, cssFilename) {
+  let html = fs.readFileSync(templatePath, "utf-8");
 
   if (!isTest) {
     html = html.replace(
@@ -34,13 +52,18 @@ function assembleHTML(jsCode) {
     );
   }
 
-  return html;
+  html = html.replace("styles.css", cssFilename);
+  html = html.replace("script.js", jsFilename);
+
+  fs.writeFileSync(path.join(distDir, "index.html"), html);
 }
 
 async function build() {
   if (!fs.existsSync(distDir)) {
     fs.mkdirSync(distDir, { recursive: true });
   }
+
+  cleanDist();
 
   const result = await esbuild.build({
     entryPoints: [path.join(srcDir, "main.js")],
@@ -58,11 +81,20 @@ async function build() {
   });
 
   const jsCode = result.outputFiles[0].text;
-  const html = assembleHTML(jsCode);
+  const jsFilename = isTest
+    ? "script.js"
+    : `script.${contentHash(jsCode)}.js`;
+  fs.writeFileSync(path.join(distDir, jsFilename), jsCode);
 
-  fs.writeFileSync(path.join(distDir, "index.html"), html);
+  const cssFilename = buildCSS();
+  buildHTML(jsFilename, cssFilename);
+
+  const jsSize = Buffer.byteLength(jsCode);
+  const cssSize = fs.statSync(path.join(distDir, cssFilename)).size;
+  const htmlSize = fs.statSync(path.join(distDir, "index.html")).size;
+  const totalKB = ((jsSize + cssSize + htmlSize) / 1024).toFixed(1);
   console.log(
-    `Built dist/index.html (${mode} mode, ${(Buffer.byteLength(html) / 1024).toFixed(1)}KB)`,
+    `Built dist/ (${mode} mode, ${totalKB}KB total: index.html + ${jsFilename} + ${cssFilename})`,
   );
 }
 

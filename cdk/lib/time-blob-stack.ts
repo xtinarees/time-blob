@@ -33,12 +33,53 @@ export class TimeBlobStack extends cdk.Stack {
       enforceSSL: true,
     });
 
+    // Security response headers
+    const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(
+      this,
+      "SecurityHeaders",
+      {
+        securityHeadersBehavior: {
+          contentSecurityPolicy: {
+            contentSecurityPolicy:
+              "default-src 'none'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'",
+            override: true,
+          },
+          strictTransportSecurity: {
+            accessControlMaxAge: cdk.Duration.seconds(63072000),
+            includeSubdomains: true,
+            preload: true,
+            override: true,
+          },
+          contentTypeOptions: { override: true },
+          frameOptions: {
+            frameOption: cloudfront.HeadersFrameOption.DENY,
+            override: true,
+          },
+          referrerPolicy: {
+            referrerPolicy:
+              cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
+            override: true,
+          },
+        },
+        customHeadersBehavior: {
+          customHeaders: [
+            {
+              header: "Permissions-Policy",
+              value: "camera=(), microphone=(), geolocation=()",
+              override: true,
+            },
+          ],
+        },
+      },
+    );
+
     // CloudFront distribution
     const distribution = new cloudfront.Distribution(this, "Distribution", {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        responseHeadersPolicy,
       },
       defaultRootObject: "index.html",
       domainNames: [domainName],

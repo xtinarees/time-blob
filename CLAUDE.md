@@ -25,12 +25,14 @@ src/
   test-controls.js     # Test mode UI (conditionally included via dynamic import)
   styles.css           # Base styles (reset, body, canvas)
   test-controls.css    # Test controls panel styles
-template.html          # HTML shell with placeholders for CSS/JS injection
+template.html          # HTML shell (references external CSS/JS)
 build.js               # Node build script (production/test/watch modes)
 package.json           # All dependencies (frontend + CDK) and build/deploy scripts
 .babelrc               # Babel config (preset-env targeting modern browsers)
 dist/                  # Build output (git-ignored)
-  index.html           # Final assembled HTML
+  index.html           # HTML page (references hashed assets in production)
+  script[.hash].js     # Bundled JavaScript (content-hashed in production)
+  styles[.hash].css    # Compiled CSS (content-hashed in production)
 deploy-infra.sh        # Infrastructure only (CDK)
 deploy-content.sh      # Content only (S3 sync + CloudFront invalidation)
 cdk/                   # AWS CDK infrastructure (TypeScript)
@@ -42,11 +44,11 @@ cdk/                   # AWS CDK infrastructure (TypeScript)
 
 ## Build System
 
-The build system uses esbuild + Babel to bundle `src/main.js` into a single `dist/index.html`. Three.js is kept external (loaded via CDN import map in the HTML).
+The build system uses esbuild + Babel to bundle source files into `dist/` as three separate files: `index.html`, `script.js`, and `styles.css`. Three.js is kept external (loaded via CDN import map in the HTML).
 
 ### Build Modes
 
-- **`npm run build`** - Production: minified, no test controls code
+- **`npm run build`** - Production: minified, no test controls code, content-hashed filenames
 - **`npm run build:test`** - Test: unminified, inline sourcemaps, test controls included
 - **`npm run watch`** - Test mode + auto-rebuild on file changes
 
@@ -54,7 +56,7 @@ The build system uses esbuild + Babel to bundle `src/main.js` into a single `dis
 
 `TEST_MODE` is a bare identifier replaced at build time by esbuild's `define`. In production, `if (TEST_MODE) {...}` becomes `if (false) {...}` and is dead-code eliminated, so test-controls.js is never imported.
 
-Test controls HTML and CSS are also stripped from the production build.
+Test controls HTML is stripped from the production `index.html`, and test-controls.css is excluded from the production `styles.css`.
 
 ## Deployment
 

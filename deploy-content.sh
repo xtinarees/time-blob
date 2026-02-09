@@ -35,11 +35,11 @@ fi
 echo "Uploading to s3://$BUCKET/..."
 aws s3 sync "$SCRIPT_DIR/dist/" "s3://$BUCKET/" --delete --region "$REGION"
 
-# Invalidate CloudFront cache
-echo "Invalidating CloudFront cache..."
+# Invalidate index.html (JS/CSS use content hashes so they don't need invalidation)
+echo "Invalidating CloudFront cache for index.html..."
 aws cloudfront create-invalidation \
     --distribution-id "$DIST_ID" \
-    --paths "/*" \
+    --paths "/index.html" \
     --output text > /dev/null
 
 echo ""

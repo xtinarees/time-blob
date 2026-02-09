@@ -24,3 +24,14 @@ Clean up scripts by moving @cdk/package.json to @package.json so there is only 1
 ## Edit 5
 
 Please split the cdk infastructure deployment and the s3 deployment into 2 separate scripts
+
+## Edit 6
+
+instead of outputting 1 index.html in the dist folder, build an index.html, script.js, and styles.css file
+instead. Update the esbuild config and the content build and deployment scripts to accomidate this change.
+Also update claude.md and readme.md
+
+## Edit 7
+
+Please use file content
+hashing for the production build of script.js and styles.css dist files.
