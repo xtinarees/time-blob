@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node bin/time-blob.ts",
+  "app": "npx tsx bin/time-blob.ts",
   "watch": {
     "include": ["**"],
     "exclude": [
