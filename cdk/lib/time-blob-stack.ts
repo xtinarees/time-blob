@@ -7,23 +7,16 @@ import * as route53 from "aws-cdk-lib/aws-route53";
 import * as targets from "aws-cdk-lib/aws-route53-targets";
 import { Construct } from "constructs";
 
+interface TimeBlobStackProps extends cdk.StackProps {
+  certificate: acm.ICertificate;
+  hostedZone: route53.IHostedZone;
+}
+
 export class TimeBlobStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: TimeBlobStackProps) {
     super(scope, id, props);
 
     const domainName = "blob.christinarees.com";
-    const zoneName = "christinarees.com";
-
-    // Look up existing hosted zone
-    const hostedZone = route53.HostedZone.fromLookup(this, "Zone", {
-      domainName: zoneName,
-    });
-
-    // ACM certificate (must be us-east-1 for CloudFront)
-    const certificate = new acm.Certificate(this, "Certificate", {
-      domainName: domainName,
-      validation: acm.CertificateValidation.fromDns(hostedZone),
-    });
 
     // S3 bucket for static website
     const bucket = new s3.Bucket(this, "TimeBlobBucket", {
@@ -83,13 +76,13 @@ export class TimeBlobStack extends cdk.Stack {
       },
       defaultRootObject: "index.html",
       domainNames: [domainName],
-      certificate,
+      certificate: props.certificate,
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
     });
 
     // Route53 A + AAAA records pointing to CloudFront
     new route53.ARecord(this, "AliasRecord", {
-      zone: hostedZone,
+      zone: props.hostedZone,
       recordName: "blob",
       target: route53.RecordTarget.fromAlias(
         new targets.CloudFrontTarget(distribution),
@@ -97,7 +90,7 @@ export class TimeBlobStack extends cdk.Stack {
     });
 
     new route53.AaaaRecord(this, "AliasRecordIPv6", {
-      zone: hostedZone,
+      zone: props.hostedZone,
       recordName: "blob",
       target: route53.RecordTarget.fromAlias(
         new targets.CloudFrontTarget(distribution),

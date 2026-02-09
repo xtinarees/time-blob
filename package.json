@@ -8,8 +8,8 @@
     "watch": "node build.js watch",
     "deploy:infra": "./deploy-infra.sh",
     "deploy:content": "./deploy-content.sh",
-    "cdk:diff": "cd cdk && npx cdk diff",
-    "cdk:destroy": "cd cdk && npx cdk destroy"
+    "cdk:diff": "cd cdk && npx cdk diff --all",
+    "cdk:destroy": "cd cdk && npx cdk destroy --all"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

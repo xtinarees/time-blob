@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STACK_NAME="TimeBlobStack"
-REGION="us-east-1"
+REGION="us-east-2"
 
 echo "=== Content Deployment ==="
 

@@ -39,7 +39,8 @@ cdk/                   # AWS CDK infrastructure (TypeScript)
   cdk.json             # CDK app config
   tsconfig.json        # TypeScript config for CDK code
   bin/time-blob.ts     # CDK app entry point
-  lib/time-blob-stack.ts  # S3 + CloudFront + ACM + Route53
+  lib/certificate-stack.ts # ACM certificate (us-east-1)
+  lib/time-blob-stack.ts  # S3 + CloudFront + Route53 (us-east-2)
 ```
 
 ## Build System
@@ -93,11 +94,12 @@ See `.env.example`. Key variable: `CDK_DEFAULT_ACCOUNT` (your 12-digit AWS accou
 
 ### Infrastructure
 
-- Region: us-east-1 (required for CloudFront ACM certs)
-- S3 bucket with OAC (no public access)
+- Two CDK stacks: `TimeBlobCertStack` (us-east-1) for ACM certificate, `TimeBlobStack` (us-east-2) for everything else
+- S3 bucket with OAC (no public access) in us-east-2
 - CloudFront with HTTPS redirect
-- ACM certificate with DNS validation via Route53
+- ACM certificate with DNS validation via Route53 (must be us-east-1 for CloudFront)
 - Hosted zone lookup for christinarees.com
+- Cross-region references enabled between stacks
 
 ## Modifying the Blob
 

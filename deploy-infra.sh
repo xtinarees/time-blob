@@ -15,12 +15,13 @@ if [ "$1" == "--bootstrap" ]; then
     echo "Bootstrapping CDK..."
     cd "$CDK_DIR"
     npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-east-1
+    npx cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-east-2
 fi
 
 # Deploy CDK stack (S3, CloudFront, ACM, Route53)
 echo "Deploying infrastructure..."
 cd "$CDK_DIR"
-npx cdk deploy --require-approval never --outputs-file outputs.json
+npx cdk deploy --all --require-approval never --outputs-file outputs.json
 
 echo ""
 echo "=== Infrastructure Deployment Complete ==="
