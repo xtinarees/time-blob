@@ -30,6 +30,7 @@ export class TimeBlobStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
     });
 
     // CloudFront distribution
@@ -45,8 +46,16 @@ export class TimeBlobStack extends cdk.Stack {
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
     });
 
-    // Route53 A record pointing to CloudFront
+    // Route53 A + AAAA records pointing to CloudFront
     new route53.ARecord(this, "AliasRecord", {
+      zone: hostedZone,
+      recordName: "blob",
+      target: route53.RecordTarget.fromAlias(
+        new targets.CloudFrontTarget(distribution),
+      ),
+    });
+
+    new route53.AaaaRecord(this, "AliasRecordIPv6", {
       zone: hostedZone,
       recordName: "blob",
       target: route53.RecordTarget.fromAlias(
